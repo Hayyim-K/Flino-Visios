@@ -74,245 +74,151 @@ class GameViewController: UIViewController {
     
     private func setLevelView(for level: Int) {
         
-        let sceneName: String = "BaseLevelScene"
-        
-        var isGravityDiviation = false
-        var isFixedGravity = true
-        var xGravity: Double = 10
-        var yGravity: Double = 10
-        var wildFireRestoreInterval: Double = 30
-        
-        var maxCloudsInRange = 4
-        var minCloudsInRange = 2
-        var dropDiameter: CGFloat = 80
-        var evaPrice = 50
-        var tFPrice = 15
-        var deviationByX: Int = 1000
-        var bgColor: UIColor = #colorLiteral(red: 0.702839592, green: 0.1938713611, blue: 0.9012210876, alpha: 0.55)
-        
-        var cloudCollisionPrice = 1
-        var stormCloudCollisionPrice = 2
-        
-        var deviationByY: Int = 1000
-        
+        var levelData = Level()
         
         switch level {
             
         case 1:
-            //            sceneName = "Level1Scene"
-            
-            maxCloudsInRange = 5
-            minCloudsInRange = 2
-            wildFireRestoreInterval = 50
-            dropDiameter = 60
-            tFPrice = 17
-            
-            deviationByX = 900
-            
-            bgColor = #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)
-            
-            
+            levelData.maxCloudsInRange = 5
+            levelData.minCloudsInRange = 2
+            levelData.wildFireRestoreInterval = 50
+            levelData.dropDiameter = 60
+            levelData.tFPrice = 17
+            levelData.deviationByX = 900
+            levelData.bgColor = #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)
         case 2:
-            //            sceneName = "Level2Scene"
-            dropDiameter = 50
-            maxCloudsInRange = 6
-            minCloudsInRange = 2
-            bgColor = #colorLiteral(red: 0.3568137853, green: 0.8410677813, blue: 0.9012210876, alpha: 0.55)
-            tFPrice = 22
-            evaPrice = 55
-            
-            deviationByX = 300
             let range = [5000, 10000, 3000, 100, 500, 1000, 1000, 100]
-            deviationByY = range.randomElement()! * [-1, 1].randomElement()!
-            
-            cloudCollisionPrice = 1
-            stormCloudCollisionPrice = 3
-            
-            wildFireRestoreInterval = 60
-            
-            
+            levelData.deviationByY = range.randomElement()! * [-1, 1].randomElement()!
+            levelData.dropDiameter = 50
+            levelData.maxCloudsInRange = 6
+            levelData.minCloudsInRange = 2
+            levelData.bgColor = #colorLiteral(red: 0.3568137853, green: 0.8410677813, blue: 0.9012210876, alpha: 0.55)
+            levelData.tFPrice = 22
+            levelData.evaPrice = 55
+            levelData.deviationByX = 300
+            levelData.cloudCollisionPrice = 1
+            levelData.stormCloudCollisionPrice = 3
+            levelData.wildFireRestoreInterval = 60
         case 3:
-            //            sceneName = "Level3Scene"
-            dropDiameter = 40
-            maxCloudsInRange = 7
-            minCloudsInRange = 2
-            bgColor = #colorLiteral(red: 0.5464277018, green: 0.6973573371, blue: 0.9012210876, alpha: 0.55)
-            tFPrice = 30
-            evaPrice = 60
-            
-            deviationByX = 500
-            
-            cloudCollisionPrice = 1
-            stormCloudCollisionPrice = 3
-            
-            isGravityDiviation = true
-            isFixedGravity = false
-            xGravity = 10
-            yGravity = 10
-            
-            
-            wildFireRestoreInterval = 10
+            levelData.dropDiameter = 40
+            levelData.maxCloudsInRange = 7
+            levelData.minCloudsInRange = 2
+            levelData.bgColor = #colorLiteral(red: 0.5464277018, green: 0.6973573371, blue: 0.9012210876, alpha: 0.55)
+            levelData.tFPrice = 30
+            levelData.evaPrice = 60
+            levelData.deviationByX = 500
+            levelData.cloudCollisionPrice = 1
+            levelData.stormCloudCollisionPrice = 3
+            levelData.isGravityDiviation = true
+            levelData.isFixedGravity = false
+            levelData.xGravity = 10
+            levelData.yGravity = 10
+            levelData.wildFireRestoreInterval = 10
             
         case 4:
-            //            sceneName = "Level4Scene"
-            dropDiameter = 30
-            maxCloudsInRange = 8
-            minCloudsInRange = 3
-            bgColor = #colorLiteral(red: 0.9012210876, green: 0.6507516332, blue: 0.6547421639, alpha: 0.55)
-            evaPrice = 65
-            tFPrice = 15
-            
-            deviationByX = 200
-            
-            cloudCollisionPrice = 2
-            stormCloudCollisionPrice = 4
-            
-            isGravityDiviation = true
-            isFixedGravity = true
-            xGravity = 0
-            yGravity = -10
-            
-            
-            wildFireRestoreInterval = 60
+            levelData.dropDiameter = 30
+            levelData.maxCloudsInRange = 8
+            levelData.minCloudsInRange = 3
+            levelData.bgColor = #colorLiteral(red: 0.9012210876, green: 0.6507516332, blue: 0.6547421639, alpha: 0.55)
+            levelData.evaPrice = 65
+            levelData.tFPrice = 15
+            levelData.deviationByX = 200
+            levelData.cloudCollisionPrice = 2
+            levelData.stormCloudCollisionPrice = 4
+            levelData.isGravityDiviation = true
+            levelData.isFixedGravity = true
+            levelData.xGravity = 0
+            levelData.yGravity = -10
+            levelData.wildFireRestoreInterval = 60
             
         case 5:
-            //            sceneName = "Level5Scene"
-            dropDiameter = 30
-            maxCloudsInRange = 9
-            minCloudsInRange = 2
-            bgColor = #colorLiteral(red: 1, green: 0.6235294118, blue: 0.03921568627, alpha: 0.8114243659)
-            evaPrice = 70
-            tFPrice = 50
-            
-            deviationByX = 100
-            
-            cloudCollisionPrice = 2
-            stormCloudCollisionPrice = 5
-            
-            wildFireRestoreInterval = 100
+            levelData.dropDiameter = 30
+            levelData.maxCloudsInRange = 9
+            levelData.minCloudsInRange = 2
+            levelData.bgColor = #colorLiteral(red: 1, green: 0.6235294118, blue: 0.03921568627, alpha: 0.8114243659)
+            levelData.evaPrice = 70
+            levelData.tFPrice = 50
+            levelData.deviationByX = 100
+            levelData.cloudCollisionPrice = 2
+            levelData.stormCloudCollisionPrice = 5
+            levelData.wildFireRestoreInterval = 100
             
         case 6:
-            //            sceneName = "Level6Scene"
-            dropDiameter = 30
-            maxCloudsInRange = 10
-            minCloudsInRange = 2
-            bgColor = #colorLiteral(red: 0.1215686277, green: 0.01176470611, blue: 0.4235294163, alpha: 1)
-            evaPrice = 100
-            tFPrice = 300
-            
-            deviationByX = 100
-            
-            cloudCollisionPrice = 3
-            stormCloudCollisionPrice = 100
-            
-            isGravityDiviation = true
-            isFixedGravity = false
-            xGravity = 10
-            yGravity = 10
-            
-            
-            wildFireRestoreInterval = 20
+            levelData.dropDiameter = 30
+            levelData.maxCloudsInRange = 10
+            levelData.minCloudsInRange = 2
+            levelData.bgColor = #colorLiteral(red: 0.1215686277, green: 0.01176470611, blue: 0.4235294163, alpha: 1)
+            levelData.evaPrice = 100
+            levelData.tFPrice = 300
+            levelData.deviationByX = 100
+            levelData.cloudCollisionPrice = 3
+            levelData.stormCloudCollisionPrice = 100
+            levelData.isGravityDiviation = true
+            levelData.isFixedGravity = false
+            levelData.xGravity = 10
+            levelData.yGravity = 10
+            levelData.wildFireRestoreInterval = 20
             
         case 7:
-            //            sceneName = "Level7Scene"
-            dropDiameter = 25
-            maxCloudsInRange = 11
-            minCloudsInRange = 3
-            bgColor = #colorLiteral(red: 0, green: 0.6140567681, blue: 0.9469888041, alpha: 0.55)
-            evaPrice = 250
-            tFPrice = 20
-            
-            deviationByX = 90
-            
-            cloudCollisionPrice = 10
-            stormCloudCollisionPrice = 50
-            
-            isGravityDiviation = true
-            isFixedGravity = true
-            xGravity = 0
-            yGravity = 8
-            
-            wildFireRestoreInterval = 160
-            
-            
+            levelData.dropDiameter = 25
+            levelData.maxCloudsInRange = 11
+            levelData.minCloudsInRange = 3
+            levelData.bgColor = #colorLiteral(red: 0, green: 0.6140567681, blue: 0.9469888041, alpha: 0.55)
+            levelData.evaPrice = 250
+            levelData.tFPrice = 20
+            levelData.deviationByX = 90
+            levelData.cloudCollisionPrice = 10
+            levelData.stormCloudCollisionPrice = 50
+            levelData.isGravityDiviation = true
+            levelData.isFixedGravity = true
+            levelData.xGravity = 0
+            levelData.yGravity = 8
+            levelData.wildFireRestoreInterval = 160
         case 8:
-            //            sceneName = "Level8Scene"
-            dropDiameter = 25
-            maxCloudsInRange = 12
-            minCloudsInRange = 2
-            bgColor = #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 0.8796610809)
-            evaPrice = 80
-            tFPrice = 70
-            
-            deviationByX = 100
-            
-            cloudCollisionPrice = 20
-            stormCloudCollisionPrice = 50
-            
-            wildFireRestoreInterval = 120
-            
+            levelData.dropDiameter = 25
+            levelData.maxCloudsInRange = 12
+            levelData.minCloudsInRange = 2
+            levelData.bgColor = #colorLiteral(red: 0.5058823824, green: 0.3372549117, blue: 0.06666667014, alpha: 0.8796610809)
+            levelData.evaPrice = 80
+            levelData.tFPrice = 70
+            levelData.deviationByX = 100
+            levelData.cloudCollisionPrice = 20
+            levelData.stormCloudCollisionPrice = 50
+            levelData.wildFireRestoreInterval = 120
         case 9:
-            //            sceneName = "Level9Scene"
-            dropDiameter = 22
-            maxCloudsInRange = 14
-            minCloudsInRange = 5
-            bgColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
-            evaPrice = 50
-            tFPrice = 5
-            
-            deviationByX = 100
-            
-            cloudCollisionPrice = 90
-            stormCloudCollisionPrice = 100
-            
-            wildFireRestoreInterval = 10
-            
+            levelData.dropDiameter = 22
+            levelData.maxCloudsInRange = 14
+            levelData.minCloudsInRange = 5
+            levelData.bgColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)
+            levelData.evaPrice = 50
+            levelData.tFPrice = 5
+            levelData.deviationByX = 100
+            levelData.cloudCollisionPrice = 90
+            levelData.stormCloudCollisionPrice = 100
+            levelData.wildFireRestoreInterval = 10
         default:
-            //            sceneName = "BaseLevelScene"
-            dropDiameter = 80
-            maxCloudsInRange = 4
-            minCloudsInRange = 2
-            
-            isGravityDiviation = false
-            isFixedGravity = true
-            xGravity = 10
-            yGravity = 10
-            
-            evaPrice = 50
-            tFPrice = 15
-            cloudCollisionPrice = 1
-            stormCloudCollisionPrice = 2
-            deviationByX = 1000
-            deviationByY = 1000
-            bgColor = #colorLiteral(red: 0.702839592, green: 0.1938713611, blue: 0.9012210876, alpha: 0.55)
-            
-            wildFireRestoreInterval = 40
-            
+            levelData.dropDiameter = 80
+            levelData.maxCloudsInRange = 4
+            levelData.minCloudsInRange = 2
+            levelData.isGravityDiviation = false
+            levelData.isFixedGravity = true
+            levelData.xGravity = 10
+            levelData.yGravity = 10
+            levelData.evaPrice = 50
+            levelData.tFPrice = 15
+            levelData.cloudCollisionPrice = 1
+            levelData.stormCloudCollisionPrice = 2
+            levelData.deviationByX = 1000
+            levelData.deviationByY = 1000
+            levelData.bgColor = #colorLiteral(red: 0.702839592, green: 0.1938713611, blue: 0.9012210876, alpha: 0.55)
+            levelData.wildFireRestoreInterval = 40
         }
         
-        levelManager.loadLevel(
-            sceneName: sceneName,
-            into: skView,
-            with: dropDiameter,
-            isGravityDiviation: isGravityDiviation,
-            isFixedGravity: isFixedGravity,
-            xGravity: xGravity,
-            yGravity: yGravity,
-            wildFireRestoreInterval: wildFireRestoreInterval,
-            maxCloudsInRange: maxCloudsInRange,
-            minCloudsInRange: minCloudsInRange,
-            score: userInfo.score,
-            level: userInfo.level,
-            evaPrice: evaPrice,
-            tFPrice: tFPrice,
-            cloudCollisionPrice: cloudCollisionPrice,
-            stormCloudCollisionPrice: stormCloudCollisionPrice,
-            deviationByX: deviationByX,
-            deviationByY: deviationByY,
-            bgColor: bgColor
-        )
+        levelData.level = userInfo.level
+        levelData.score = userInfo.score
+        levelManager.load(level: levelData, into: skView)
         
-        gravityDirectionImage.isHidden = !isGravityDiviation
+        gravityDirectionImage.isHidden = !levelData.isGravityDiviation
         
         savedScore = userInfo.score
         
@@ -377,7 +283,6 @@ class GameViewController: UIViewController {
         UIAlertController(
             title: userInfo.level < 9 ? "LEVEL COMPETED" : "GAME OVER",
             message: "Your Score: \(userInfo.level < 9 ? userInfo.score + 1 : userInfo.score)",
-            //            message: "Your Score: \(userInfo.level < 9 ? userInfo.score + 101 : userInfo.score + 1)",
             preferredStyle: .alert
         ) :
         UIAlertController(

@@ -8,48 +8,7 @@ import SpriteKit
 
 class BaseLevelScene: SKScene {
     
-    var isGravityDiviation = false
-    var isFixedGravity = true
-    var xGravity: Double = 10 {
-        didSet {
-            configureGravityDirection(xGravity, yGravity)
-        }
-    }
-    var yGravity: Double = 10 {
-        didSet {
-            configureGravityDirection(xGravity, yGravity)
-        }
-    }
-    
-    var maxCloudsInRange = 4
-    var minCloudsInRange = 2
-    
-    var wildFireRestoreInterval = 30.0
-    
-    var dropDiameter: CGFloat = 80
-    
-    var score: Int! {
-        willSet {
-            NotificationCenter.default.post(
-                name: Notification.Name("scoreHaschanged"),
-                object: nil,
-                userInfo: ["score": score ?? 0, "level": level ?? 0]
-            )
-        }
-    }
-    
-    var level: Int!
-    
-    var evaPrice = 50
-    var tFPrice = 33
-    var cloudCollisionPrice = 1
-    var stormCloudCollisionPrice = 2
-    
-    var deviationByX: Int = 100
-    var deviationByY: Int = 1000
-
-    var bgColor: UIColor = .clear
-    
+    var levelData: Level!
     
     private var gravitationDirection: GravitationDirections = .down
     
@@ -57,13 +16,47 @@ class BaseLevelScene: SKScene {
     
     private var drop: SKSpriteNode?
     
+    private var timers: [Timer] = []
+    
     private var dropIsActive = false
     private var collisionOccurred = false
     
-    private var cloudCollisionsCounter = 0
+    private var clouds = [
+        "cloud_1",
+        "cloud_2",
+        "cloud_3",
+        "cloud_4"
+    ]
+    private var stormClouds = [
+        "stormCloud_1",
+        "stormCloud_2",
+        "stormCloud_3",
+        "stormCloud_4"
+    ]
     
-    private var clouds = ["cloud_1", "cloud_2", "cloud_3", "cloud_4"]
-    private var stormClouds = ["stormCloud_1", "stormCloud_2", "stormCloud_3", "stormCloud_4"]
+    private var cloudCollisionsCounter = 0
+    private var addWildFireSwitcher = 0
+    private var level = 0
+    
+    private var score = 0 {
+        willSet {
+            NotificationCenter.default.post(
+                name: Notification.Name("scoreHaschanged"),
+                object: nil,
+                userInfo: ["score": score, "level": level]
+            )
+        }
+    }
+    private var xGravity: Double = 10 {
+        didSet {
+            configureGravityDirection(xGravity, yGravity)
+        }
+    }
+    private var yGravity: Double = 10 {
+        didSet {
+            configureGravityDirection(xGravity, yGravity)
+        }
+    }
     
     private var currentCloudName = "" {
         didSet {
@@ -87,17 +80,14 @@ class BaseLevelScene: SKScene {
         }
     }
     
-    private var addWildFireSwitcher = 0
-    
-    
     override func didMove(to view: SKView) {
         
-        xGravity += 1
-        xGravity -= 1
+        score = levelData.score
         score -= 1
+        level = levelData.level
+        xGravity = levelData.xGravity
         
-        
-        if isGravityDiviation, isFixedGravity {
+        if levelData.isGravityDiviation, levelData.isFixedGravity {
             Timer.scheduledTimer(
                 withTimeInterval: 10,
                 repeats: true) { [weak self] _ in
@@ -125,9 +115,9 @@ class BaseLevelScene: SKScene {
         setBoard()
         setDrop()
         
-        if isGravityDiviation, !isFixedGravity {
+        if levelData.isGravityDiviation, !levelData.isFixedGravity {
             motionManager.startAccelerometerUpdates()
-        } else if isGravityDiviation, isFixedGravity {
+        } else if levelData.isGravityDiviation, levelData.isFixedGravity {
             physicsWorld.gravity = CGVector(
                 dx: xGravity,
                 dy: yGravity
@@ -143,8 +133,8 @@ class BaseLevelScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         
-        if isGravityDiviation,
-           !isFixedGravity,
+        if levelData.isGravityDiviation,
+           !levelData.isFixedGravity,
            let accelerometerData = motionManager.accelerometerData {
             physicsWorld.gravity = CGVector(
                 dx: accelerometerData.acceleration.x * xGravity,
@@ -161,7 +151,7 @@ class BaseLevelScene: SKScene {
             )
         }
         
-        if isGravityDiviation, isFixedGravity {
+        if levelData.isGravityDiviation, levelData.isFixedGravity {
             physicsWorld.gravity = CGVector(
                 dx: xGravity,
                 dy: yGravity
@@ -181,7 +171,10 @@ class BaseLevelScene: SKScene {
         
         dropIsActive = true
         
-        let wait = SKAction.wait(forDuration: 0.3)
+        timers.forEach { $0.invalidate() }
+        timers = []
+        
+        let wait = SKAction.wait(forDuration: 0.4)
         let go = SKAction.run { [weak self] in
             NotificationCenter.default.post(
                 name: Notification.Name("levelCompleted"),
@@ -255,11 +248,11 @@ class BaseLevelScene: SKScene {
         cloud.name = "\(cloudType)_\(UUID())"
         cloud.position = position
         cloud.size = CGSize(
-            width: dropDiameter * 3,
-            height: dropDiameter * 2
+            width: levelData.dropDiameter * 3,
+            height: levelData.dropDiameter * 2
         )
         cloud.physicsBody = SKPhysicsBody(
-            circleOfRadius: CGFloat(dropDiameter / 2)
+            circleOfRadius: CGFloat(levelData.dropDiameter / 2)
         )
         cloud.physicsBody?.pinned = true
         cloud.physicsBody?.isDynamic = !isStorm ? true : false
@@ -276,12 +269,12 @@ class BaseLevelScene: SKScene {
         if let wildFire = SKEmitterNode(fileNamed: "wildFire") {
             wildFire.position = position
             wildFire.particleSize = CGSize(
-                width: Double(dropDiameter) * 2.7,
+                width: Double(levelData.dropDiameter) * 2.7,
                 height: 100.0
             )
             wildFire.physicsBody = SKPhysicsBody(
                 rectangleOf: CGSize(
-                    width: Double(dropDiameter) * 2.7,
+                    width: Double(levelData.dropDiameter) * 2.7,
                     height: 100.0
                 )
             )
@@ -305,7 +298,7 @@ class BaseLevelScene: SKScene {
             )
             smoke.physicsBody = SKPhysicsBody(
                 rectangleOf: CGSize(
-                    width: Double(dropDiameter) * 2.7,
+                    width: Double(levelData.dropDiameter) * 2.7,
                     height: 100.0
                 )
             )
@@ -324,8 +317,8 @@ class BaseLevelScene: SKScene {
         if let rain = SKEmitterNode(fileNamed: "rain") {
             rain.position = position
             rain.particleSize = CGSize(
-                width: dropDiameter * 1.5,
-                height: dropDiameter * 1.5
+                width: levelData.dropDiameter * 1.5,
+                height: levelData.dropDiameter * 1.5
             )
             addChild(rain)
             
@@ -343,8 +336,8 @@ class BaseLevelScene: SKScene {
         if let steam = SKEmitterNode(fileNamed: "boil") {
             steam.position = position
             steam.particleSize = CGSize(
-                width: dropDiameter * 1.5,
-                height: dropDiameter * 1.5
+                width: levelData.dropDiameter * 1.5,
+                height: levelData.dropDiameter * 1.5
             )
             addChild(steam)
             
@@ -362,15 +355,15 @@ class BaseLevelScene: SKScene {
         let aim = SKSpriteNode(
             color: .clear,
             size: CGSize(
-                width: dropDiameter * 4,
-                height: dropDiameter * 3
+                width: levelData.dropDiameter * 4,
+                height: levelData.dropDiameter * 3
             )
         )
         aim.position = position
         aim.physicsBody = SKPhysicsBody(
             rectangleOf: CGSize(
-                width: dropDiameter * 4,
-                height: dropDiameter * 3
+                width: levelData.dropDiameter * 4,
+                height: levelData.dropDiameter * 3
             )
         )
         aim.physicsBody?.pinned = true
@@ -391,17 +384,17 @@ class BaseLevelScene: SKScene {
         
         let minYPos =  -frame.height / 2 + 800
         
-        for range in stride(from: maxCloudsInRange, to: minCloudsInRange - 1, by: -1) {
+        for range in stride(from: levelData.maxCloudsInRange, to: levelData.minCloudsInRange - 1, by: -1) {
             
-            let currentYPos = minYPos + CGFloat((maxCloudsInRange - range)) * dropDiameter * 3
-            let rangeFrame = (CGFloat(range) - 1) / 2.0 * 4 * dropDiameter
+            let currentYPos = minYPos + CGFloat((levelData.maxCloudsInRange - range)) * levelData.dropDiameter * 3
+            let rangeFrame = (CGFloat(range) - 1) / 2.0 * 4 * levelData.dropDiameter
             
-            for i in stride(from: rangeFrame, to: -rangeFrame - 1, by: -4 * dropDiameter) {
+            for i in stride(from: rangeFrame, to: -rangeFrame - 1, by: -4 * levelData.dropDiameter) {
                 
                 let cloudPosition = CGPoint(x: i, y: currentYPos)
                 setCloud(position: cloudPosition, isStorm: Bool.random())
                 
-                if maxCloudsInRange - range == 1 {
+                if levelData.maxCloudsInRange - range == 1 {
                     
                     let aimPosition = CGPoint(x: i, y: minYPos - 210)
                     setAim(on: aimPosition)
@@ -444,8 +437,8 @@ class BaseLevelScene: SKScene {
         drop.physicsBody = SKPhysicsBody(
             texture: SKTexture(imageNamed: "newBall"),
             size: CGSize(
-                width: dropDiameter,
-                height: dropDiameter
+                width: levelData.dropDiameter,
+                height: levelData.dropDiameter
             )
         )
         drop.physicsBody?.affectedByGravity = true
@@ -459,12 +452,12 @@ class BaseLevelScene: SKScene {
         drop.physicsBody?.contactTestBitMask = PhysicsCategory.aim
         
         drop.position = CGPoint(
-            x: Double.random(in: -dropDiameter * 3.5...dropDiameter * 3.5),
+            x: Double.random(in: -levelData.dropDiameter * 3.5...levelData.dropDiameter * 3.5),
             y: frame.height / 2 - 120
         )
         drop.size = CGSize(
-            width: dropDiameter,
-            height: dropDiameter
+            width: levelData.dropDiameter,
+            height: levelData.dropDiameter
         )
         //        drop.zPosition = 0
         
@@ -555,11 +548,11 @@ class BaseLevelScene: SKScene {
         else { return }
         
         if cloud?.physicsBody?.isDynamic == false {
-            score -= stormCloudCollisionPrice
+            score -= levelData.stormCloudCollisionPrice
             
             setPointsLabel(
                 position: position,
-                text: "-\(stormCloudCollisionPrice)",
+                text: "-\(levelData.stormCloudCollisionPrice)",
                 color: .red
             )
         } else {
@@ -567,11 +560,11 @@ class BaseLevelScene: SKScene {
                 SKAction.init(named: "Pulse")!,
                 withKey: "fadeInOut"
             )
-            score += cloudCollisionPrice
+            score += levelData.cloudCollisionPrice
             
             setPointsLabel(
                 position: position,
-                text: "+\(cloudCollisionPrice)",
+                text: "+\(levelData.cloudCollisionPrice)",
                 color: .green
             )
             setRain(on: position)
@@ -587,56 +580,56 @@ class BaseLevelScene: SKScene {
         switch gravitationDirection {
         case .right:
             impulse = CGVector(
-                dx: -deviationByY,
-                dy: tag == 0 ? deviationByX : -deviationByX
+                dx: -levelData.deviationByY,
+                dy: tag == 0 ? levelData.deviationByX : -levelData.deviationByX
             )
         case .left:
             impulse = CGVector(
-                dx: deviationByY,
-                dy: tag == 0 ? deviationByX : -deviationByX
+                dx: levelData.deviationByY,
+                dy: tag == 0 ? levelData.deviationByX : -levelData.deviationByX
             )
         case .up:
             impulse = CGVector(
-                dx: tag == 0 ? -deviationByX : deviationByX,
-                dy: -deviationByY
+                dx: tag == 0 ? -levelData.deviationByX : levelData.deviationByX,
+                dy: -levelData.deviationByY
             )
         case .down:
             impulse = CGVector(
-                dx: tag == 0 ? deviationByX : -deviationByX,
-                dy: deviationByY
+                dx: tag == 0 ? levelData.deviationByX : -levelData.deviationByX,
+                dy: levelData.deviationByY
             )
         case .downRight:
             impulse = CGVector(
-                dx: -deviationByY,
-                dy: tag == 0 ? deviationByX : -deviationByX * 2
+                dx: -levelData.deviationByY,
+                dy: tag == 0 ? levelData.deviationByX : -levelData.deviationByX * 2
             )
         case .downLeft:
             impulse = CGVector(
-                dx: deviationByY,
-                dy: tag == 0 ? deviationByX : -deviationByX * 2
+                dx: levelData.deviationByY,
+                dy: tag == 0 ? levelData.deviationByX : -levelData.deviationByX * 2
             )
         case .upRight:
             impulse = CGVector(
-                dx: tag == 0 ? -deviationByY : deviationByX,
-                dy: -deviationByY
+                dx: tag == 0 ? -levelData.deviationByY : levelData.deviationByX,
+                dy: -levelData.deviationByY
             )
         case .upLeft:
             impulse = CGVector(
-                dx: tag == 0 ? -deviationByX : deviationByY,
-                dy: -deviationByY
+                dx: tag == 0 ? -levelData.deviationByX : levelData.deviationByY,
+                dy: -levelData.deviationByY
             )
         }
         
         drop?.physicsBody!.applyImpulse(impulse)
         
-        score -= tFPrice
+        score -= levelData.tFPrice
         
         setPointsLabel(
             position: CGPoint(
                 x: 50 - frame.width / 2,
                 y: frame.height / 2 - 350
             ),
-            text: "-\(tFPrice)",
+            text: "-\(levelData.tFPrice)",
             color: .red
         )
         
@@ -644,14 +637,14 @@ class BaseLevelScene: SKScene {
     
     @objc private func refreshDrop() {
         
-        score -= evaPrice
+        score -= levelData.evaPrice
         
         setPointsLabel(
             position: CGPoint(
                 x: 55 - frame.width / 2,
                 y: frame.height / 2 - 370
             ),
-            text: "-\(evaPrice)",
+            text: "-\(levelData.evaPrice)",
             color: .red
         )
         
@@ -689,18 +682,20 @@ extension BaseLevelScene: SKPhysicsContactDelegate {
                 
                 if addWildFireSwitcher >= 3 {
                     print("\n/n\ntimer started\n/n\n")
-                    Timer.scheduledTimer(
-                        withTimeInterval: wildFireRestoreInterval * 1.6,
-                        repeats: false) { [weak self] timer in
-                            
-                            if Bool.random() {
-                                self?.setFire(on: position)
-                            } else {
-                                self?.setSmoke(on: position)
+                    timers.append(
+                        Timer.scheduledTimer(
+                            withTimeInterval: levelData.wildFireRestoreInterval * 1.6,
+                            repeats: false) { [weak self] timer in
+                                
+                                if Bool.random() {
+                                    self?.setFire(on: position)
+                                } else {
+                                    self?.setSmoke(on: position)
+                                }
+                                
+                                timer.invalidate()
                             }
-                            
-                            timer.invalidate()
-                        }
+                    )
                     
                     addWildFireSwitcher = 0
                 }
