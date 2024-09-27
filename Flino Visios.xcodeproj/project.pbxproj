@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6FA6930C2CA6FD8C00EC8BA1 /* AppsFlyerLib-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 6FA6930B2CA6FD8C00EC8BA1 /* AppsFlyerLib-Dynamic */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6F99222D2CA5B3130055F857 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FA6930C2CA6FD8C00EC8BA1 /* AppsFlyerLib-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,12 +124,14 @@
 			buildRules = (
 			);
 			dependencies = (
+				6FA693042CA6D42200EC8BA1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				6F9922182CA5B3110055F857 /* Flino Visios */,
 			);
 			name = "Flino Visios";
 			packageProductDependencies = (
+				6FA6930B2CA6FD8C00EC8BA1 /* AppsFlyerLib-Dynamic */,
 			);
 			productName = "Flino Visios";
 			productReference = 6F9922162CA5B3110055F857 /* Flino Visios.app */;
@@ -208,6 +215,9 @@
 			);
 			mainGroup = 6F99220D2CA5B3110055F857;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6FA693022CA6D34F00EC8BA1 /* XCRemoteSwiftPackageReference "AppsFlyerFramework-Dynamic" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6F9922172CA5B3110055F857 /* Products */;
 			projectDirPath = "";
@@ -279,6 +289,10 @@
 			target = 6F9922152CA5B3110055F857 /* Flino Visios */;
 			targetProxy = 6F9922372CA5B3130055F857 /* PBXContainerItemProxy */;
 		};
+		6FA693042CA6D42200EC8BA1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 6FA693032CA6D42200EC8BA1 /* AppsFlyerLib-Dynamic */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -306,9 +320,11 @@
 				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "hayyimsTeam.Flino-Visios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -336,9 +352,11 @@
 				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "hayyimsTeam.Flino-Visios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -573,6 +591,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6FA693022CA6D34F00EC8BA1 /* XCRemoteSwiftPackageReference "AppsFlyerFramework-Dynamic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework-Dynamic";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.15.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6FA693032CA6D42200EC8BA1 /* AppsFlyerLib-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6FA693022CA6D34F00EC8BA1 /* XCRemoteSwiftPackageReference "AppsFlyerFramework-Dynamic" */;
+			productName = "AppsFlyerLib-Dynamic";
+		};
+		6FA6930B2CA6FD8C00EC8BA1 /* AppsFlyerLib-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6FA693022CA6D34F00EC8BA1 /* XCRemoteSwiftPackageReference "AppsFlyerFramework-Dynamic" */;
+			productName = "AppsFlyerLib-Dynamic";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6F99220E2CA5B3110055F857 /* Project object */;
 }

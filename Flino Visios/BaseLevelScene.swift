@@ -686,7 +686,6 @@ extension BaseLevelScene: SKPhysicsContactDelegate {
                 addWildFireSwitcher += 1
                 
                 if addWildFireSwitcher >= 3 {
-                    print("\n/n\ntimer started\n/n\n")
                     timers.append(
                         Timer.scheduledTimer(
                             withTimeInterval: levelData.wildFireRestoreInterval * 1.6,
