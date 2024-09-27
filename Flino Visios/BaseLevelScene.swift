@@ -7,9 +7,11 @@ import AudioToolbox
 import SpriteKit
 
 class BaseLevelScene: SKScene {
-    
+   
+    // MARK: - Global Properties
     var levelData: Level!
     
+    // MARK: - Private Properties
     private var gravitationDirection: GravitationDirections = .down
     
     private let motionManager = CMMotionManager()
@@ -38,6 +40,7 @@ class BaseLevelScene: SKScene {
     private var addWildFireSwitcher = 0
     private var level = 0
     
+    // MARK: - Calculated Properties
     private var score = 0 {
         willSet {
             NotificationCenter.default.post(
@@ -80,6 +83,7 @@ class BaseLevelScene: SKScene {
         }
     }
     
+    // MARK: - override funcs
     override func didMove(to view: SKView) {
         
         score = levelData.score
@@ -87,7 +91,8 @@ class BaseLevelScene: SKScene {
         level = levelData.level
         xGravity = levelData.xGravity
         
-        if levelData.isGravityDiviation, levelData.isFixedGravity {
+        if levelData.isGravityDiviation,
+           levelData.isFixedGravity {
             Timer.scheduledTimer(
                 withTimeInterval: 10,
                 repeats: true) { [weak self] _ in
@@ -167,6 +172,7 @@ class BaseLevelScene: SKScene {
         
     }
     
+    // MARK: - Private funcs
     private func levelCompleted() {
         
         dropIsActive = true
@@ -378,8 +384,6 @@ class BaseLevelScene: SKScene {
         wildFiersCounter += 1
     }
     
-    
-    
     private func setBoard() {
         
         let minYPos =  -frame.height / 2 + 800
@@ -456,10 +460,9 @@ class BaseLevelScene: SKScene {
             y: frame.height / 2 - 120
         )
         drop.size = CGSize(
-            width: levelData.dropDiameter,
-            height: levelData.dropDiameter
+            width: levelData.dropDiameter * (level < 3 ? 1.2 : 1.5),
+            height: levelData.dropDiameter * (level < 3 ? 1.2 : 1.5)
         )
-        //        drop.zPosition = 0
         
         addChild(drop)
         
@@ -571,6 +574,7 @@ class BaseLevelScene: SKScene {
         }
     }
     
+    // MARK: - objc funcs
     @objc private func turbulenceFlowButtonTapped(_ notification: Notification) {
         
         let tag = notification.userInfo!["tag"] as! Int
@@ -658,6 +662,7 @@ class BaseLevelScene: SKScene {
     
 }
 
+// MARK: - SKPhysicsContactDelegate
 extension BaseLevelScene: SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {

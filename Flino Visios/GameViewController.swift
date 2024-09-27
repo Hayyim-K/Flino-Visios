@@ -5,6 +5,7 @@ import SpriteKit
 
 class GameViewController: UIViewController {
     
+    // MARK: - IBOutlets
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var levelLabel: UILabel!
     @IBOutlet weak var evaLabel: UILabel!
@@ -15,6 +16,7 @@ class GameViewController: UIViewController {
     
     @IBOutlet weak var gravityDirectionImage: UIImageView!
     
+    // MARK: - Private properties
     private let uD = StorageManager.shared
     private let levelManager = LevelManager.shared
     
@@ -27,7 +29,7 @@ class GameViewController: UIViewController {
     
     private var savedScore = 0
     
-    
+    // MARK: - Override funcs
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,6 +38,43 @@ class GameViewController: UIViewController {
         userInfo.bestScore = uD.fatchStatistics().bestScore
         uD.save(userInfo)
         
+        setNotifications()
+        
+        scoreLabel.textColor = .black
+        scoreLabel.text = "SCORE: \(userInfo.score)"
+        levelLabel.text = "LEVEL: \(userInfo.level)"
+        evaLabel.text = "EVA: \(userInfo.evaCounter)"
+        tFLabels.forEach{ $0.text = "TF: \(userInfo.tFCounter)" }
+        
+        setLevelView(for: userInfo.level)
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        uD.save(userInfo)
+    }
+    
+    // system override funcs
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return .allButUpsideDown
+        } else {
+            return .all
+        }
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    // MARK: - Private funcs
+    /// all notifications
+    private func setNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(gameOver),
@@ -56,22 +95,9 @@ class GameViewController: UIViewController {
             name: Notification.Name("gravityDirectionHasChanged"),
             object: nil
         )
-        
-        scoreLabel.textColor = .black
-        scoreLabel.text = "SCORE: \(userInfo.score)"
-        levelLabel.text = "LEVEL: \(userInfo.level)"
-        evaLabel.text = "EVA: \(userInfo.evaCounter)"
-        tFLabels.forEach{ $0.text = "TF: \(userInfo.tFCounter)" }
-        
-        setLevelView(for: userInfo.level)
-        
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        uD.save(userInfo)
-    }
-    
+    /// the main func which adjusts a scene according to a level
     private func setLevelView(for level: Int) {
         
         var levelData = Level()
@@ -228,6 +254,9 @@ class GameViewController: UIViewController {
         skView.backgroundColor = .clear
     }
     
+    
+    // MARK: - objc funcs
+    /// defines the direction of gravitation with force vector and set the arrow
     @objc private func configureGravityDirectionImage(_ notification: Notification) {
         let (x, y) = (
             notification.userInfo?["x"] as! Double,
@@ -235,11 +264,11 @@ class GameViewController: UIViewController {
         )
         
         switch (x, y) {
-        case (0.1..., -1...1):
+        case (0.01..., -1.5...1.5):
             gravityDirectionImage.image = UIImage(
                 systemName: GravitationDirections.right.rawValue
             )
-        case (-1...1, 0.1...):
+        case (-1.5...1.5, 0.01...):
             gravityDirectionImage.image = UIImage(
                 systemName: GravitationDirections.up.rawValue
             )
@@ -251,11 +280,11 @@ class GameViewController: UIViewController {
             gravityDirectionImage.image = UIImage(
                 systemName: GravitationDirections.downLeft.rawValue
             )
-        case (...0, -1...1):
+        case (...0, -1.5...1.5):
             gravityDirectionImage.image = UIImage(
                 systemName: GravitationDirections.left.rawValue
             )
-        case (-1...1, ...0):
+        case (-1.5...1.5, ...0):
             gravityDirectionImage.image = UIImage(
                 systemName: GravitationDirections.down.rawValue
             )
@@ -275,6 +304,7 @@ class GameViewController: UIViewController {
         
     }
     
+    /// preparetion the view for the level's completion
     @objc private func gameOver(_ notification: Notification) {
         
         setLabels(notification)
@@ -318,6 +348,7 @@ class GameViewController: UIViewController {
         present(alert, animated: true)
     }
     
+    ///  update labels and data every time score changes
     @objc private func setLabels(_ notification: Notification) {
         
         let score = notification.userInfo?["score"] as! Int
@@ -346,27 +377,7 @@ class GameViewController: UIViewController {
         
     }
     
-    override var shouldAutorotate: Bool {
-        return true
-    }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
-    }
-    
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    
+    // MARK: - IBActions
     @IBAction func turbulenceFlowButtonPressed(_ sender: UIButton) {
         tFCount += 1
         NotificationCenter.default.post(
@@ -376,13 +387,17 @@ class GameViewController: UIViewController {
         )
     }
     
-    
     @IBAction func evaporationButtonTapped(_ sender: Any) {
         evaCount += 1
         NotificationCenter.default.post(
             name: Notification.Name("evaporationButtonTapped"),
             object: nil
         )
+    }
+    
+    // MARK: - deinit
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
 }

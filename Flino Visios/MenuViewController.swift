@@ -20,7 +20,6 @@ class MenuViewController: UIViewController {
         lastScoreLabel.text = "LAST SCORE: \(userInfo.score)"
     }
     
-    
     @IBAction func playButtonPressed() {
         UISelectionFeedbackGenerator().selectionChanged()
     }
